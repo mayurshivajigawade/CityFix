@@ -157,7 +157,7 @@ Getting Started
 
 Clone the repository:
 
-git clone https://github.com/OWNER/REPOSITORY.git
+git clone https://github.com/mayurshivajigawade/CityFix.git
 
 Enter the project folder:
 
