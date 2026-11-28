@@ -4,7 +4,6 @@ import random
 from contextlib import asynccontextmanager
 from typing import List, Optional
 
-# Ensure backend directory is in sys.path for Vercel serverless execution
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
