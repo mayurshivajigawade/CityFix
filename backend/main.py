@@ -1,8 +1,13 @@
 import os
+import sys
 import random
 from contextlib import asynccontextmanager
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+
+# Ensure backend directory is in sys.path for Vercel serverless execution
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -125,20 +130,32 @@ def seed_initial_data(db: Session):
         db.add_all(drives)
         db.commit()
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+_db_initialized = False
+
+def init_db_safe():
+    global _db_initialized
+    if _db_initialized:
+        return
     Base.metadata.create_all(bind=engine)
     db = next(get_db())
     try:
         seed_initial_data(db)
+        _db_initialized = True
     finally:
         db.close()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        init_db_safe()
+    except Exception:
+        pass
     yield
 
 app = FastAPI(
     title=os.getenv("APP_NAME", "CityFix API"),
     description="Civic Intelligence, AI Issue Triage, Ward Leaderboards & Participatory Budgeting Platform",
-    version="2.0.0",
+    version="3.0.0",
     lifespan=lifespan
 )
 
@@ -152,11 +169,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def ensure_db_ready(request: Request, call_next):
+    if request.url.path.startswith("/api/") and request.url.path != "/api/health":
+        init_db_safe()
+    return await call_next(request)
+
 FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "healthy", "service": "CityFix Civic Intelligence API", "version": "2.0.0"}
+    return {"status": "healthy", "service": "CityFix Civic Intelligence API", "version": "3.0.0"}
 
 @app.get("/api/stats")
 def get_dashboard_stats(db: Session = Depends(get_db)):
