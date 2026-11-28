@@ -19,7 +19,7 @@ CityFix transforms passive neighborhood complaints into verifiable civic action.
 - **Frontend**: HTML5, CSS3 (Custom Civic Navy / Urban Sky / Action Emerald Design System), Vanilla JavaScript (ES6+ Fetch API)
 - **Backend**: Python 3.10+, FastAPI, SQLAlchemy ORM, Pydantic v2, Uvicorn
 - **Database**: PostgreSQL (`psycopg2-binary`)
-- **Deployment**: GitHub + Vercel (`@vercel/python` & `@vercel/static`)
+- **Deployment**: GitHub
 - **AI & Development Tools Used**: Assisted with code scaffolding and UI styling; synthetic/demo ward metrics and sample tickets are clearly labeled per Buildathon guidelines.
 
 ---
@@ -39,7 +39,5 @@ CityFix/
 │   ├── index.html           # Landing page & live civic dashboard
 │   └── styles.css           # Responsive Civic OS theme
 ├── database_init.sql        # PostgreSQL database creation helper
-├── vercel.json              # Vercel serverless routing configuration
-├── requirements.txt         # Root dependency manifest for Vercel
 ├── .gitignore
 └── README.md
